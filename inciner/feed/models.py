@@ -30,10 +30,12 @@ class Feeds(models.Model):
 class Comments(models.Model):
     content = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
+    feed = models.ForeignKey(Feeds, on_delete=models.CASCADE, related_name='comments')
+    # nickname = 논의필요
 
     class Meta:
         ordering = ["-created_at"]
     
     def __str__(self):
         return f"({self.created_at}): {self.content[:20]}..."
-        # 닉네임 필요한데 Feeds 모델에 국한되어있음. 논의 후 수정 필요.
+        # return f"self.nickname ({self.created_at}): {self.content[:20]}..."

@@ -3,9 +3,9 @@ from django.utils import timezone
 from datetime import timedelta
 
 class Feeds(models.Model):
-    nickname = models.CharField(max_length=15)
+    nickname = models.CharField(max_length=6)
     content = models.CharField(max_length=300)
-    created_at = models.DateTimeField(editable=False)
+    created_at = models.DateTimeField(blank=True, editable=False)
     expires_at = models.DateTimeField(blank=True, editable=False)
     fan_cnt = models.PositiveIntegerField(default=0)
     wood_cnt = models.PositiveIntegerField(default=0)
@@ -28,14 +28,13 @@ class Feeds(models.Model):
 
 
 class Comments(models.Model):
+    nickname = models.CharField(max_length=6)
     content = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     feed = models.ForeignKey(Feeds, on_delete=models.CASCADE, related_name='comments')
-    # nickname = 논의필요
 
     class Meta:
         ordering = ["-created_at"]
     
     def __str__(self):
-        return f"({self.created_at}): {self.content[:20]}..."
-        # return f"self.nickname ({self.created_at}): {self.content[:20]}..."
+        return f"self.feed - self.nickname ({self.created_at}): {self.content[:20]}..."

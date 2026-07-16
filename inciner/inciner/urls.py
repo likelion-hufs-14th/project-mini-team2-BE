@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from feed.views import FeedReactionView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('feeds/<int:pk>/react/<str:reaction_type>/', FeedReactionView.as_view(), name='feed-react'),
 ]

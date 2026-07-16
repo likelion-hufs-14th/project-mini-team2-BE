@@ -15,7 +15,7 @@ SECRET_KEY = config('SECRET_KEY')
 # settings.py
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', '3.35.176.218']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
 # Application definition

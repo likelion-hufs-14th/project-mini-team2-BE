@@ -28,9 +28,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # third-party
+    'rest_framework',
+    'drf_spectacular',
+
     # inciner apps
     'feed',
 ]
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# drf-spectacular (Swagger / OpenAPI)
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'INCINER API',
+    'DESCRIPTION': '24시간 후 자동으로 소각(incinerate)되는 익명 피드 서비스 API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

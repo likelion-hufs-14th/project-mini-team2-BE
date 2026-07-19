@@ -10,20 +10,17 @@ class FeedReactionView(APIView):
     def post(self, request, pk, reaction_type):
         feed = get_object_or_404(Feeds, pk=pk)
 
-        if reaction_type == 'fan':
-            feed.fan_cnt += 1
-        elif reaction_type == 'wood':
-            feed.wood_cnt += 1
-        else:
+        try:
+            feed.add_reaction(reaction_type)
+        except ValueError as e:
             return Response(
-                {"error": "잘못된 요청입니다."}, 
+                {"error": str(e)}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
-        feed.save()
 
         return Response({
             "feed_id": feed.id,
             "fan_cnt": feed.fan_cnt,
-            "wood_cnt": feed.wood_cnt
+            "wood_cnt": feed.wood_cnt,
+            "expires_at": feed.expires_at
         }, status=status.HTTP_200_OK)

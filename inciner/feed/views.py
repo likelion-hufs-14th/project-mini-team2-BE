@@ -116,30 +116,11 @@ class CommentListView(APIView):
 # Reaction
 class FeedReactionView(APIView):
     @extend_schema(
+        request=FeedSerializer,
         responses={
-            200: OpenApiResponse(
-                description="OK",
-                response=inline_serializer(
-                    name='ReactionResponse',
-                    fields={
-                        'feed_id': serializers.IntegerField(),
-                        'fan_cnt': serializers.IntegerField(),
-                        'wood_cnt': serializers.IntegerField(),
-                        'expires_at': serializers.DateTimeField(),
-                    }
-                )
-            ),
-            400: OpenApiResponse(
-                description="Bad Request",
-                response=inline_serializer(
-                    name='ReactionErrorResponse',
-                    fields={
-                        'error': serializers.CharField()
-                    }
-                )
-            ),
+            201: OpenApiResponse(response=FeedSerializer, description="Created"),
             404: OpenApiResponse(description="Not Found"),
-        }
+        },
     )
 
     def post(self, request, pk, reaction_type):
@@ -153,9 +134,4 @@ class FeedReactionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response({
-            "feed_id": feed.id,
-            "fan_cnt": feed.fan_cnt,
-            "wood_cnt": feed.wood_cnt,
-            "expires_at": feed.expires_at
-        }, status=status.HTTP_200_OK)
+        return Response(FeedSerializer(feed).data, status=status.HTTP_200_OK)

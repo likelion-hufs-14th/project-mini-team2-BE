@@ -2,8 +2,8 @@ from rest_framework import serializers
 from .models import Feeds, Comments, BurnCount
 
 # Feeds
-## Read
-class FeedListSerializer(serializers.ModelSerializer):
+## Read (List, Detail)
+class FeedSerializer(serializers.ModelSerializer):
     feed_id = serializers.IntegerField(source='id', read_only=True)
     comment_cnt = serializers.SerializerMethodField()
 
@@ -15,12 +15,6 @@ class FeedListSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'comment_cnt'):
             return obj.comment_cnt
         return obj.comments.count()
-
-class FeedDetailSerializer(serializers.ModelSerializer):
-    feed_id = serializers.IntegerField(source='id', read_only=True)
-    class Meta:
-        model = Feeds
-        fields = ['feed_id', 'content', 'nickname', 'created_at', 'expires_at', 'fan_cnt', 'wood_cnt']
 
 ## Create
 class FeedCreateSerializer(serializers.ModelSerializer):

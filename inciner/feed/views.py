@@ -133,7 +133,6 @@ class CommentListView(APIView):
 # Reaction
 class FeedReactionView(APIView):
     @extend_schema(
-        request=FeedSerializer,
         responses={
             201: OpenApiResponse(response=FeedSerializer, description="Created"),
             400: OpenApiResponse(description="Bad Request"),

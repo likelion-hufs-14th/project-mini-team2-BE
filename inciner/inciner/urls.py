@@ -1,22 +1,7 @@
-"""
-URL configuration for inciner project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
+from django.urls import path, include
+
 from django.urls import path
-from feed.views import FeedReactionView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -25,6 +10,7 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('feeds/', include('feed.urls')),
 
     # OpenAPI 스키마 (앞으로 추가되는 DRF API가 자동으로 여기에 수집됩니다)
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -33,5 +19,4 @@ urlpatterns = [
     # ReDoc
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
-    path('feeds/<int:pk>/react/<str:reaction_type>/', FeedReactionView.as_view(), name='feed-react'),
 ]

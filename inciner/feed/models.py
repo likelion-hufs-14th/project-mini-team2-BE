@@ -58,3 +58,17 @@ class Comments(models.Model):
     
     def __str__(self):
         return f"{self.feed} - {self.nickname} ({self.created_at}): {self.content[:20]}..."
+    
+
+class BurnCount(models.Model):
+    count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Burn Count: {self.count}"
+    
+    @classmethod
+    def increment(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        cls.objects.filter(pk=1).update(count=F('count') + 1)
+        obj.refresh_from_db()
+        return obj

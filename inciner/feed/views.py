@@ -119,12 +119,13 @@ class FeedReactionView(APIView):
         request=FeedSerializer,
         responses={
             201: OpenApiResponse(response=FeedSerializer, description="Created"),
+            400: OpenApiResponse(description="Bad Request"),
             404: OpenApiResponse(description="Not Found"),
         },
     )
 
-    def post(self, request, pk, reaction_type):
-        feed = get_object_or_404(Feeds, pk=pk)
+    def post(self, request, feed_id, reaction_type):
+        feed = get_object_or_404(Feeds.objects.filter(expires_at__gt=timezone.now()), pk=feed_id)
 
         try:
             feed.add_reaction(reaction_type)
@@ -134,4 +135,4 @@ class FeedReactionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response(FeedSerializer(feed).data, status=status.HTTP_200_OK)
+        return Response(FeedSerializer(feed).data, status=status.HTTP_201_CREATED)

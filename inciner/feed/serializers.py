@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Feeds, Comments, BurnCount
+from drf_spectacular.utils import extend_schema_field
 
 # Feeds
 ## Read (List, Detail)
@@ -10,7 +11,8 @@ class FeedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feeds
         fields = ['feed_id', 'content', 'nickname', 'created_at', 'expires_at', 'fan_cnt', 'wood_cnt', 'comment_cnt']
-
+    
+    @extend_schema_field(serializers.IntegerField)
     def get_comment_cnt(self, obj):
         if hasattr(obj, 'comment_cnt'):
             return obj.comment_cnt

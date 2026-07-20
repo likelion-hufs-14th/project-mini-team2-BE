@@ -6,7 +6,8 @@ from datetime import timedelta
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
+from rest_framework import serializers
 
 from .models import Feeds, BurnCount
 from .serializers import FeedSerializer, FeedCreateSerializer, CommentListSerializer, CommentCreateSerializer, BurnCountSerializer
@@ -112,7 +113,35 @@ class CommentListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Reaction
 class FeedReactionView(APIView):
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                description="OK",
+                response=inline_serializer(
+                    name='ReactionResponse',
+                    fields={
+                        'feed_id': serializers.IntegerField(),
+                        'fan_cnt': serializers.IntegerField(),
+                        'wood_cnt': serializers.IntegerField(),
+                        'expires_at': serializers.DateTimeField(),
+                    }
+                )
+            ),
+            400: OpenApiResponse(
+                description="Bad Request",
+                response=inline_serializer(
+                    name='ReactionErrorResponse',
+                    fields={
+                        'error': serializers.CharField()
+                    }
+                )
+            ),
+            404: OpenApiResponse(description="Not Found"),
+        }
+    )
+
     def post(self, request, pk, reaction_type):
         feed = get_object_or_404(Feeds, pk=pk)
 

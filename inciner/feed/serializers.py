@@ -26,9 +26,10 @@ class FeedCreateSerializer(serializers.ModelSerializer):
 ## Read
 class CommentListSerializer(serializers.ModelSerializer):
     cmt_id = serializers.IntegerField(source='id', read_only=True)
+    feed_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Comments
-        fields = ['cmt_id', 'content', 'nickname', 'created_at']
+        fields = ['cmt_id', 'feed_id', 'content', 'nickname', 'created_at']
 
 ## Create
 class CommentCreateSerializer(serializers.ModelSerializer):

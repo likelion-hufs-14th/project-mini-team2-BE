@@ -7,7 +7,7 @@
 ## 개요
 
 - 게시글(Feed)은 작성 시각으로부터 24시간이 지나면 만료됩니다.
-- 좋아요/싫어요 대신 `fan`(부채질)과 `wood`(장작) 카운트로 반응을 표현합니다.
+- 공감/비공감으로 반응을 표현합니다.
 - 게시글에는 댓글(Comment)을 남길 수 있습니다.
 
 ---
@@ -16,8 +16,7 @@
 
 - Python 3.13
 - Django 4.2.8
-- SQLite
-- python-decouple
+- MySQL
 
 ---
 
@@ -37,9 +36,10 @@ inciner/
 - [x] `Feeds` 모델: 닉네임, 내용, 생성/만료 시각(24시간 후 자동 만료), fan/wood 카운트
 - [x] `Comments` 모델: 댓글 내용, 생성 시각
 - [x] `nickname` 정책 수정 논의 필요 - 프론트에서 `localStorage` 활용할 예정
-- [ ] API 뷰/URL 설계
-- [ ] 테스트 코드 작성
-- [ ] CICD 기반 배포 테스트
+- [ ] Feed API 구현
+- [ ] Comments API 구현
+- [ ] Reaction API 구현
+- [x] 피드 업로드 사용자 Count 로직
 
 ---
 
@@ -89,9 +89,11 @@ python manage.py runserver
 
 ## 협업 규칙
 
-### 새 기능 추가
+### 새 기능 추가 과정
 
-`feat/function-name`으로 기능 단위 브랜치 파서 커밋 -> PR로 main에 머지
+`feat/function-name`으로 기능 단위 브랜치 파서 커밋
+-> 리뷰 반영하여 같은 브랜치에 커밋
+-> 최종 승인 받으면 PR로 main에 머지
 
 ### 커밋 메시지 컨벤션
 
@@ -127,5 +129,5 @@ EX) `feat: Comments 모델에 nickname 필드 추가`
 
 ## 리뷰 시 참고사항 (선택)
 
-- PR 리뷰어가 특히 봐줬으면 하는 부분
+- 리뷰어가 특히 봐줬으면 하는 부분
 ```

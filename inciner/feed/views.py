@@ -63,8 +63,8 @@ class FeedListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class FeedDetailView(APIView):
-    def get_object(self, pk):
-        return get_object_or_404(Feeds.objects.filter(expires_at__gt=timezone.now()), pk=pk)
+    def get_object(self, feed_id):
+        return get_object_or_404(Feeds.objects.filter(expires_at__gt=timezone.now()), pk=feed_id)
 
     @extend_schema(
         responses={
@@ -72,16 +72,16 @@ class FeedDetailView(APIView):
             404: OpenApiResponse(description="Not Found"),
         }
     )
-    def get(self, request, pk):
-        feed = self.get_object(pk)
+    def get(self, request, feed_id):
+        feed = self.get_object(feed_id)
         serializer = FeedSerializer(feed)
         return Response(serializer.data)
 
 
 # Comment
 class CommentListView(APIView):
-    def get_feed(self, pk):
-        return get_object_or_404(Feeds.objects.filter(expires_at__gt=timezone.now()), pk=pk)
+    def get_feed(self, feed_id):
+        return get_object_or_404(Feeds.objects.filter(expires_at__gt=timezone.now()), pk=feed_id)
 
     @extend_schema(
         responses={
@@ -89,8 +89,8 @@ class CommentListView(APIView):
             404: OpenApiResponse(description="Not Found"),
         }
     )
-    def get(self, request, pk):
-        feed = self.get_feed(pk)
+    def get(self, request, feed_id):
+        feed = self.get_feed(feed_id)
         comments = feed.comments.all()
         serializer = CommentListSerializer(comments, many=True)
         return Response(serializer.data)
@@ -103,8 +103,8 @@ class CommentListView(APIView):
             404: OpenApiResponse(description="Not Found"),
         },
     )
-    def post(self, request, pk):
-        feed = self.get_feed(pk)
+    def post(self, request, feed_id):
+        feed = self.get_feed(feed_id)
         serializer = CommentCreateSerializer(data=request.data)
         if serializer.is_valid():
             comment = serializer.save(feed=feed)
@@ -113,8 +113,8 @@ class CommentListView(APIView):
 
 
 class FeedReactionView(APIView):
-    def post(self, request, pk, reaction_type):
-        feed = get_object_or_404(Feeds, pk=pk)
+    def post(self, request, feed_id, reaction_type):
+        feed = get_object_or_404(Feeds, pk=feed_id)
 
         try:
             feed.add_reaction(reaction_type)

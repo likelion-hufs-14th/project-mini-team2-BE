@@ -6,11 +6,12 @@ from datetime import timedelta
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer
+from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_serializer, OpenApiParameter
 from rest_framework import serializers
 
 from .models import Feeds, BurnCount
 from .serializers import FeedSerializer, FeedCreateSerializer, CommentListSerializer, CommentCreateSerializer, BurnCountSerializer
+from .pagination import FeedPagination
 
 # Burn Count
 class BurnCountView(APIView):
@@ -38,16 +39,32 @@ class BurnCountView(APIView):
 # Feed
 class FeedListView(APIView):
     @extend_schema(
+        parameters=[
+            OpenApiParameter("page", int, description="페이지 번호"),
+            OpenApiParameter("page_size", int, description="페이지당 항목 수 (최대 50)"),
+        ],
         responses={
-            200: OpenApiResponse(response=FeedSerializer(many=True), description="OK"),
-        }
+            200: inline_serializer(
+                name="PaginatedFeedList",
+                fields={
+                    "count": serializers.IntegerField(),
+                    "next": serializers.URLField(allow_null=True),
+                    "previous": serializers.URLField(allow_null=True),
+                    "results": FeedSerializer(many=True),
+                },
+            ),
+        },
     )
+
     def get(self, request):
         feed = Feeds.objects.filter(expires_at__gt=timezone.now()).annotate(
             comment_cnt=Count('comments')
         )
-        serializer = FeedSerializer(feed, many=True)
-        return Response(serializer.data)
+
+        paginator = FeedPagination()
+        paginated_feed = paginator.paginate_queryset(feed, request)
+        serializer = FeedSerializer(paginated_feed, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @extend_schema(
         request=FeedCreateSerializer,

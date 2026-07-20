@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import FeedListView, FeedDetailView, CommentListView, BurnCountView, FeedReactionView
+from .views import FeedListView, FeedDetailView, CommentListView, FeedReactionView, BurnCountView
 
 urlpatterns = [
     path('', FeedListView.as_view()),

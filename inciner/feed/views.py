@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, inline_seriali
 from rest_framework import serializers
 
 from .models import Feeds, BurnCount
-from .serializers import FeedListSerializer, FeedDetailSerializer, FeedCreateSerializer, CommentListSerializer, CommentCreateSerializer, BurnCountSerializer
+from .serializers import FeedSerializer, FeedCreateSerializer, CommentListSerializer, CommentCreateSerializer, BurnCountSerializer
 
 # Burn Count
 class BurnCountView(APIView):
@@ -22,7 +22,8 @@ class BurnCountView(APIView):
     )
     def post(self, request):
         burn = BurnCount.increment()
-        return Response({'burn_cnt': burn.count}, status=status.HTTP_201_CREATED)
+        serializer = BurnCountSerializer(burn)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(
         responses={
@@ -31,26 +32,27 @@ class BurnCountView(APIView):
     )
     def get(self, request):
         burn, _ = BurnCount.objects.get_or_create(pk=1)
-        return Response({'burn_cnt': burn.count})
+        serializer = BurnCountSerializer(burn)
+        return Response(serializer.data)
 
 # Feed
 class FeedListView(APIView):
     @extend_schema(
         responses={
-            200: OpenApiResponse(response=FeedListSerializer(many=True), description="OK"),
+            200: OpenApiResponse(response=FeedSerializer(many=True), description="OK"),
         }
     )
     def get(self, request):
         feed = Feeds.objects.filter(expires_at__gt=timezone.now()).annotate(
             comment_cnt=Count('comments')
         )
-        serializer = FeedListSerializer(feed, many=True)
+        serializer = FeedSerializer(feed, many=True)
         return Response(serializer.data)
 
     @extend_schema(
         request=FeedCreateSerializer,
         responses={
-            201: OpenApiResponse(response=FeedListSerializer, description="Created"),
+            201: OpenApiResponse(response=FeedSerializer, description="Created"),
             400: OpenApiResponse(description="Bad Request"),
         },
     )
@@ -58,7 +60,7 @@ class FeedListView(APIView):
         serializer = FeedCreateSerializer(data=request.data)
         if serializer.is_valid():
             feed = serializer.save()
-            return Response(FeedListSerializer(feed).data, status=status.HTTP_201_CREATED)
+            return Response(FeedSerializer(feed).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class FeedDetailView(APIView):
@@ -67,13 +69,13 @@ class FeedDetailView(APIView):
 
     @extend_schema(
         responses={
-            200: OpenApiResponse(response=FeedDetailSerializer, description="OK"),
+            200: OpenApiResponse(response=FeedSerializer, description="OK"),
             404: OpenApiResponse(description="Not Found"),
         }
     )
     def get(self, request, pk):
         feed = self.get_object(pk)
-        serializer = FeedDetailSerializer(feed)
+        serializer = FeedSerializer(feed)
         return Response(serializer.data)
 
 

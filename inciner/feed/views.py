@@ -59,7 +59,7 @@ class FeedListView(APIView):
     def get(self, request):
         feed = Feeds.objects.filter(expires_at__gt=timezone.now()).annotate(
             comment_cnt=Count('comments')
-        )
+        ).order_by('-created_at')
 
         paginator = FeedPagination()
         paginated_feed = paginator.paginate_queryset(feed, request)

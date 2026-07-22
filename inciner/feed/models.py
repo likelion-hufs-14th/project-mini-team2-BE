@@ -54,7 +54,7 @@ class Comments(models.Model):
     feed = models.ForeignKey(Feeds, on_delete=models.CASCADE, related_name='comments')
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["created_at"]
     
     def __str__(self):
         return f"{self.feed} - {self.nickname} ({self.created_at}): {self.content[:20]}..."
